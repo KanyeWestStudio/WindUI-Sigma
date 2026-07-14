@@ -461,9 +461,8 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 
 				Dropdown.Tabs[Index] = TabMain
 
-				DropdownModule:Display()
-
 				if Type == "Dropdown" then
+				
 					Creator.AddSignal(TabMain.UIElements.TabItem.MouseButton1Click, function()
 						if Dropdown.Locked or TabMain.Locked then
 							return
@@ -544,13 +543,14 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 					end)
 				end
 
-				RecalculateCanvasSize()
-				RecalculateListSize()
-			else
+
+				else
 				require("../../elements/Divider"):New({ Parent = Dropdown.UIElements.Menu.Frame.ScrollingFrame })
 			end
 		end
 
+		RecalculateCanvasSize()
+		RecalculateListSize()
 		-- local maxWidth = Dropdown.MenuWidth or 0
 		-- if maxWidth == 0 then
 		--     for _, tabmain in next, Dropdown.Tabs do
