@@ -331,7 +331,7 @@ function Element:New(Config)
 					Value = CalculateValue(Slider.Value.Min + delta * (Slider.Value.Max - Slider.Value.Min))
 
 					if Value ~= LastValue then
-						Tween(Slider.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(delta, 0, 1, 0) }):Play()
+						Slider.UIElements.SliderIcon.Frame.Size = UDim2.new(delta, 0, 1, 0)
 						Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(Value)
 						if Tooltip then
 							Tooltip.TitleFrame.Text = FormatValue(Value)
