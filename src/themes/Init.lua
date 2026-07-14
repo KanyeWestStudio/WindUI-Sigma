@@ -375,6 +375,52 @@ return function(WindUI, Creator)
 			}, { Rotation = 60 }),
 
 			Icon = Color3.fromHex("#ffffff"),
-		},
+		}
+		
+	LiquidGlass = {
+    Name = "Liquid Glass",
+
+    Background = Color3.fromHex("#FFFFFF"),
+    PanelBackground = Color3.fromHex("#FFFFFF"),
+    PanelBackgroundTransparency = 0.75,
+    ElementBackground = Color3.fromHex("#FFFFFF"),
+    ElementBackgroundTransparency = 0.7,
+    TabBackground = Color3.fromHex("#FFFFFF"),
+    TabBackgroundTransparency = 0.7,
+    TabBackgroundActive = Color3.fromHex("#007AFF"),
+    TabBackgroundActiveTransparency = 0.15,
+
+    Text = Color3.fromHex("#000000"),
+    TextTransparency = 0.1,
+    TabTitle = Color3.fromHex("#000000"),
+    TabTitleTransparency = 0.2,
+    ElementTitle = Color3.fromHex("#1C1C1E"),
+    ElementDesc = Color3.fromHex("#3A3A3C"),
+    Placeholder = Color3.fromHex("#8E8E93"),
+
+    Accent = Color3.fromHex("#007AFF"),
+    Button = Color3.fromHex("#007AFF"),
+    Slider = Color3.fromHex("#007AFF"),
+    SliderIcon = Color3.fromHex("#8E8E93"),
+    Checkbox = Color3.fromHex("#007AFF"),
+    Toggle = Color3.fromHex("#34C759"),
+    Icon = Color3.fromHex("#007AFF"),
+    IconTransparency = 0.2,
+
+    Outline = Color3.fromHex("#FFFFFF"),
+    TabBorder = Color3.fromHex("#FFFFFF"),
+    TabBorderTransparency = 0.4,
+    TabBorderTransparencyActive = 0.15,
+
+    TabBackgroundHover = Color3.fromHex("#E5E5EA"),
+    TabBackgroundHoverTransparency = 0.4,
+    ElementHover = Color3.fromHex("#E5E5EA"),
+    ElementHoverTransparency = 0.3,
+
+    GlassColor = Color3.fromHex("#FFFFFF"),
+    GlassTransparency = 0.55,
+
+    SliderThumb = Color3.fromHex("#FFFFFF"),
+    SliderThumbTransparency = 0.1,
 	}
 end
