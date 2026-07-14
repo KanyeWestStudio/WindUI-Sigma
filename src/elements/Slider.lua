@@ -46,14 +46,17 @@ function Element:New(Config)
 		Slider.IsTextbox = Slider.IsTextbox ~= false
 	end
 
-	local isTouch
-	local moveconnection
-	local releaseconnection
-	local Value = Slider.Value.Default or Slider.Value.Min or 0
+local isTouch
+local moveconnection
+local releaseconnection
+local Value = Slider.Value.Default or Slider.Value.Min or 0
 
-	local LastValue = Value
-	local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (Slider.Value.Min or 0))
+Slider.Value.Min = Slider.Value.Min or 0
+Slider.Value.Max = Slider.Value.Max or 100
 
+local LastValue = Value
+local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (Slider.Value.Min or 0))
+	
 	local CanCallback = true
 	local IsFloat = Slider.Step % 1 ~= 0
 
