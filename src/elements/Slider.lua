@@ -46,16 +46,17 @@ function Element:New(Config)
 		Slider.IsTextbox = Slider.IsTextbox ~= false
 	end
 
-local isTouch
-local moveconnection
-local releaseconnection
-local Value = Slider.Value.Default or Slider.Value.Min or 0
+	local isTouch
+	local moveconnection
+	local releaseconnection
+	local Value = Slider.Value.Default or Slider.Value.Min or 0
 
-Slider.Value.Min = Slider.Value.Min or 0
-Slider.Value.Max = Slider.Value.Max or 100
+	-- ✅ Set defaults immediately
+	Slider.Value.Min = Slider.Value.Min or 0
+	Slider.Value.Max = Slider.Value.Max or 100
 
-local LastValue = Value
-local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (Slider.Value.Min or 0))
+	local LastValue = Value
+	local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (Slider.Value.Min or 0))
 	
 	local CanCallback = true
 	local IsFloat = Slider.Step % 1 ~= 0
@@ -228,10 +229,12 @@ local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (
 		Slider:Lock()
 	end
 
-	--local ScrollingFrameParent = Slider.SliderFrame.Parent:IsA("ScrollingFrame") and Slider.SliderFrame.Parent or Slider.SliderFrame.Parent.Parent.Parent
 	local ScrollingFrameParent = Config.Tab.UIElements.ContainerFrame
 
 	function Slider:Set(Value, input)
+		Slider.Value.Min = Slider.Value.Min or 0
+		Slider.Value.Max = Slider.Value.Max or 100
+
 		if CanCallback then
 			if
 				not Slider.IsFocusing
@@ -291,8 +294,7 @@ local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (
 							Creator.SafeCallback(Slider.Callback, FormatValue(Value))
 						end
 					end)
-
-					-- release slider
+					
 					releaseconnection = UserInputService.InputEnded:Connect(function(endInput)
 						if
 							(
@@ -349,7 +351,8 @@ local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (
 	end
 
 	function Slider:SetMax(newMax)
-		Slider.Value.Max = newMax
+		Slider.Value.Max = newMax or 100
+		if Slider.Value.Min == nil then Slider.Value.Min = 0 end
 
 		local currentValue = tonumber(Slider.Value.Default) or LastValue
 		if currentValue > newMax then
@@ -362,7 +365,8 @@ local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (
 	end
 
 	function Slider:SetMin(newMin)
-		Slider.Value.Min = newMin
+		Slider.Value.Min = newMin or 0q
+		if Slider.Value.Max == nil then Slider.Value.Max = 100 end
 
 		local currentValue = tonumber(Slider.Value.Default) or LastValue
 		if currentValue < newMin then
@@ -402,7 +406,6 @@ local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (
 
 			Slider:Set(Value, input)
 
-			-- drag slider
 			if Config.Window.NewElements then
 				Tween(Slider.UIElements.SliderIcon.Frame.Thumb, 0.24, {
 					ImageTransparency = 0.85,
@@ -417,7 +420,6 @@ local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (
 			if Tooltip then
 				Tooltip:Open()
 			end
-			--print("piskaa")
 		end
 	end)
 
