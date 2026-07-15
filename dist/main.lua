@@ -7408,15 +7408,19 @@ am=(aB.UserInputType==Enum.UserInputType.Touch)
 ay.ScrollingEnabled=false
 ai=true
 
-local b=am and aB.Position.X or ac:GetMouseLocation().X
-local d=math.clamp(
-(b-al.UIElements.SliderIcon.AbsolutePosition.X)
-/al.UIElements.SliderIcon.AbsoluteSize.X,
-0,
-1
+local b = am and aB.Position.X or ac:GetMouseLocation().X
+local d = math.clamp(
+    (b - al.UIElements.SliderIcon.AbsolutePosition.X)
+    / al.UIElements.SliderIcon.AbsoluteSize.X,
+    0,
+    1
 )
-aA=CalculateValue(al.Value.Min+d*(al.Value.Max-al.Value.Min))
-aA=math.clamp(aA,al.Value.Min or 0,al.Value.Max or 100)
+local minVal = al.Value.Min or 0
+local maxVal = al.Value.Max or 100
+al.Value.Min = minVal
+al.Value.Max = maxVal
+aA = CalculateValue(minVal + d * (maxVal - minVal))
+aA = math.clamp(aA, minVal, maxVal)
 
 if aA~=aq then
 ag(al.UIElements.SliderIcon.Frame,0.05,{Size=UDim2.new(d,0,1,0)}):Play()
@@ -7437,7 +7441,7 @@ local g=math.clamp(
 0,
 1
 )
-aA=CalculateValue(al.Value.Min+g*(al.Value.Max-al.Value.Min))
+aA = CalculateValue(minVal + g * (maxVal - minVal))
 
 if aA~=aq then
 ag(al.UIElements.SliderIcon.Frame,0.05,{Size=UDim2.new(g,0,1,0)}):Play()
