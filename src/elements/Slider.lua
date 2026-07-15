@@ -46,18 +46,17 @@ function Element:New(Config)
 		Slider.IsTextbox = Slider.IsTextbox ~= false
 	end
 
+	Slider.Value.Min = Slider.Value.Min or 1
+	Slider.Value.Max = Slider.Value.Max or 100
+
 	local isTouch
 	local moveconnection
 	local releaseconnection
 	local Value = Slider.Value.Default or Slider.Value.Min or 0
 
-	-- ✅ Set defaults immediately
-	Slider.Value.Min = Slider.Value.Min or 0
-	Slider.Value.Max = Slider.Value.Max or 100
-
 	local LastValue = Value
 	local delta = (Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (Slider.Value.Min or 0))
-	
+
 	local CanCallback = true
 	local IsFloat = Slider.Step % 1 ~= 0
 
@@ -232,8 +231,10 @@ function Element:New(Config)
 	local ScrollingFrameParent = Config.Tab.UIElements.ContainerFrame
 
 	function Slider:Set(Value, input)
-		Slider.Value.Min = Slider.Value.Min or 0
-		Slider.Value.Max = Slider.Value.Max or 100
+		local minVal = Slider.Value.Min or 0
+		local maxVal = Slider.Value.Max or 100
+		Slider.Value.Min = minVal
+		Slider.Value.Max = maxVal
 
 		if CanCallback then
 			if
@@ -259,8 +260,9 @@ function Element:New(Config)
 						0,
 						1
 					)
-					Value = CalculateValue(Slider.Value.Min + delta * (Slider.Value.Max - Slider.Value.Min))
-					Value = math.clamp(Value, Slider.Value.Min or 0, Slider.Value.Max or 100)
+					
+					Value = CalculateValue(minVal + delta * (maxVal - minVal))
+					Value = math.clamp(Value, minVal, maxVal)
 
 					if Value ~= LastValue then
 						Tween(Slider.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(delta, 0, 1, 0) }):Play()
@@ -281,7 +283,7 @@ function Element:New(Config)
 							0,
 							1
 						)
-						Value = CalculateValue(Slider.Value.Min + delta * (Slider.Value.Max - Slider.Value.Min))
+						Value = CalculateValue(minVal + delta * (maxVal - minVal))
 
 						if Value ~= LastValue then
 							Tween(Slider.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(delta, 0, 1, 0) }):Play()
@@ -294,7 +296,7 @@ function Element:New(Config)
 							Creator.SafeCallback(Slider.Callback, FormatValue(Value))
 						end
 					end)
-					
+
 					releaseconnection = UserInputService.InputEnded:Connect(function(endInput)
 						if
 							(
@@ -326,14 +328,14 @@ function Element:New(Config)
 						end
 					end)
 				else
-					Value = math.clamp(Value, Slider.Value.Min or 0, Slider.Value.Max or 100)
+					Value = math.clamp(Value, minVal, maxVal)
 
 					local delta = math.clamp(
-						(Value - (Slider.Value.Min or 0)) / ((Slider.Value.Max or 100) - (Slider.Value.Min or 0)),
+						(Value - minVal) / (maxVal - minVal),
 						0,
 						1
 					)
-					Value = CalculateValue(Slider.Value.Min + delta * (Slider.Value.Max - Slider.Value.Min))
+					Value = CalculateValue(minVal + delta * (maxVal - minVal))
 
 					if Value ~= LastValue then
 						Slider.UIElements.SliderIcon.Frame.Size = UDim2.new(delta, 0, 1, 0)
@@ -351,7 +353,8 @@ function Element:New(Config)
 	end
 
 	function Slider:SetMax(newMax)
-		Slider.Value.Max = newMax or 100
+		newMax = newMax or 100
+		Slider.Value.Max = newMax
 		if Slider.Value.Min == nil then Slider.Value.Min = 0 end
 
 		local currentValue = tonumber(Slider.Value.Default) or LastValue
@@ -365,7 +368,8 @@ function Element:New(Config)
 	end
 
 	function Slider:SetMin(newMin)
-		Slider.Value.Min = newMin or 0q
+		newMin = newMin or 0
+		Slider.Value.Min = newMin
 		if Slider.Value.Max == nil then Slider.Value.Max = 100 end
 
 		local currentValue = tonumber(Slider.Value.Default) or LastValue
