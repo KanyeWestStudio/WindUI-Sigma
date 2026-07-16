@@ -7512,31 +7512,32 @@ function al.Set(az, aA, aB)
     end
                end
                
-function al.SetMax(az,aA)
-al.Value.Max=aA
+function al.SetMax(az, aA)
+    al.Value.Max = aA or 100
+    if al.Value.Min == nil then al.Value.Min = 0 end
 
-local aB=tonumber(al.Value.Default)or aq
-if aB>aA then
-al:Set(aA)
-else
-local b=
-math.clamp((aB-(al.Value.Min or 0))/(aA-(al.Value.Min or 0)),0,1)
-ag(al.UIElements.SliderIcon.Frame,0.1,{Size=UDim2.new(b,0,1,0)}):Play()
-end
-end
+    local aB = tonumber(al.Value.Default) or aq
+    if aB > aA then
+        al:Set(aA)
+    else
+        local b = math.clamp((aB - (al.Value.Min or 0)) / (aA - (al.Value.Min or 0)), 0, 1)
+        ag(al.UIElements.SliderIcon.Frame, 0.1, { Size = UDim2.new(b, 0, 1, 0) }):Play()
+    end
+               end
 
-function al.SetMin(az,aA)
-al.Value.Min=aA
+function al.SetMin(az, aA)
+    al.Value.Min = aA or 0
+    if al.Value.Max == nil then al.Value.Max = 100 end
 
-local aB=tonumber(al.Value.Default)or aq
-if aB<aA then
-al:Set(aA)
-else
-local b=math.clamp((aB-aA)/((al.Value.Max or 100)-aA),0,1)
-ag(al.UIElements.SliderIcon.Frame,0.1,{Size=UDim2.new(b,0,1,0)}):Play()
+    local aB = tonumber(al.Value.Default) or aq
+    if aB < aA then
+        al:Set(aA)
+    else
+        local b = math.clamp((aB - aA) / ((al.Value.Max or 100) - aA), 0, 1)
+        ag(al.UIElements.SliderIcon.Frame, 0.1, { Size = UDim2.new(b, 0, 1, 0) }):Play()
+    end
 end
-end
-
+               
 ae.AddSignal(al.UIElements.SliderContainer.TextBox.FocusLost,function(az)
 local aA=tonumber(al.UIElements.SliderContainer.TextBox.Text)
 if aA then
