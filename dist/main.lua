@@ -7390,127 +7390,128 @@ end
 
 local ay=ak.Tab.UIElements.ContainerFrame
 
-function al.Set(az,aA,aB)
-if as then
-if
-not al.IsFocusing
-and not ai
-and(
-not aB
-or(
-aB.UserInputType==Enum.UserInputType.MouseButton1
-or aB.UserInputType==Enum.UserInputType.Touch
-)
-)
-then
-if aB then
-am=(aB.UserInputType==Enum.UserInputType.Touch)
-ay.ScrollingEnabled=false
-ai=true
+function al.Set(az, aA, aB)
+    -- 🛡️ SAFETY: ensure Min/Max are never nil
+    local minVal = al.Value.Min or 0
+    local maxVal = al.Value.Max or 100
+    al.Value.Min = minVal
+    al.Value.Max = maxVal
 
-local b = am and aB.Position.X or ac:GetMouseLocation().X
-local d = math.clamp(
-    (b - al.UIElements.SliderIcon.AbsolutePosition.X)
-    / al.UIElements.SliderIcon.AbsoluteSize.X,
-    0,
-    1
-)
-local minVal = al.Value.Min or 0
-local maxVal = al.Value.Max or 100
-al.Value.Min = minVal
-al.Value.Max = maxVal
-aA = CalculateValue(minVal + d * (maxVal - minVal))
-aA = math.clamp(aA, minVal, maxVal)
+    if as then
+        if
+            not al.IsFocusing
+            and not ai
+            and(
+                not aB
+                or(
+                    aB.UserInputType == Enum.UserInputType.MouseButton1
+                    or aB.UserInputType == Enum.UserInputType.Touch
+                )
+            )
+        then
+            if aB then
+                am = (aB.UserInputType == Enum.UserInputType.Touch)
+                ay.ScrollingEnabled = false
+                ai = true
 
-if aA~=aq then
-ag(al.UIElements.SliderIcon.Frame,0.05,{Size=UDim2.new(d,0,1,0)}):Play()
-al.UIElements.SliderContainer.TextBox.Text=FormatValue(aA)
-if ax then
-ax.TitleFrame.Text=FormatValue(aA)
-end
-al.Value.Default=FormatValue(aA)
-aq=aA
-ae.SafeCallback(al.Callback,FormatValue(aA))
-end
+                local b = am and aB.Position.X or ac:GetMouseLocation().X
+                local d = math.clamp(
+                    (b - al.UIElements.SliderIcon.AbsolutePosition.X)
+                    / al.UIElements.SliderIcon.AbsoluteSize.X,
+                    0,
+                    1
+                )
+                aA = CalculateValue(minVal + d * (maxVal - minVal))
+                aA = math.clamp(aA, minVal, maxVal)
 
-an=ad.RenderStepped:Connect(function()
-local f=am and aB.Position.X or ac:GetMouseLocation().X
-local g=math.clamp(
-(f-al.UIElements.SliderIcon.AbsolutePosition.X)
-/al.UIElements.SliderIcon.AbsoluteSize.X,
-0,
-1
-)
-aA = CalculateValue(minVal + g * (maxVal - minVal))
+                if aA ~= aq then
+                    ag(al.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(d, 0, 1, 0) }):Play()
+                    al.UIElements.SliderContainer.TextBox.Text = FormatValue(aA)
+                    if ax then
+                        ax.TitleFrame.Text = FormatValue(aA)
+                    end
+                    al.Value.Default = FormatValue(aA)
+                    aq = aA
+                    ae.SafeCallback(al.Callback, FormatValue(aA))
+                end
 
-if aA~=aq then
-ag(al.UIElements.SliderIcon.Frame,0.05,{Size=UDim2.new(g,0,1,0)}):Play()
-al.UIElements.SliderContainer.TextBox.Text=FormatValue(aA)
-if ax then
-ax.TitleFrame.Text=FormatValue(aA)
-end
-al.Value.Default=FormatValue(aA)
-aq=aA
-ae.SafeCallback(al.Callback,FormatValue(aA))
-end
-end)
+                an = ad.RenderStepped:Connect(function()
+                    local f = am and aB.Position.X or ac:GetMouseLocation().X
+                    local g = math.clamp(
+                        (f - al.UIElements.SliderIcon.AbsolutePosition.X)
+                        / al.UIElements.SliderIcon.AbsoluteSize.X,
+                        0,
+                        1
+                    )
+                    aA = CalculateValue(minVal + g * (maxVal - minVal))
 
+                    if aA ~= aq then
+                        ag(al.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(g, 0, 1, 0) }):Play()
+                        al.UIElements.SliderContainer.TextBox.Text = FormatValue(aA)
+                        if ax then
+                            ax.TitleFrame.Text = FormatValue(aA)
+                        end
+                        al.Value.Default = FormatValue(aA)
+                        aq = aA
+                        ae.SafeCallback(al.Callback, FormatValue(aA))
+                    end
+                end)
 
-ao=ac.InputEnded:Connect(function(f)
-if
-(
-f.UserInputType==Enum.UserInputType.MouseButton1
-or f.UserInputType==Enum.UserInputType.Touch
-)and aB==f
-then
-an:Disconnect()
-ao:Disconnect()
-ai=false
-ay.ScrollingEnabled=true
+                ao = ac.InputEnded:Connect(function(f)
+                    if
+                        (
+                            f.UserInputType == Enum.UserInputType.MouseButton1
+                            or f.UserInputType == Enum.UserInputType.Touch
+                        ) and aB == f
+                    then
+                        an:Disconnect()
+                        ao:Disconnect()
+                        ai = false
+                        ay.ScrollingEnabled = true
 
-ak.WindUI.CurrentInput=nil
+                        ak.WindUI.CurrentInput = nil
 
-if ak.Window.NewElements then
-ag(al.UIElements.SliderIcon.Frame.Thumb,0.2,{
-ImageTransparency=0,
-Size=UDim2.new(
-0,
-ak.Window.NewElements and(al.ThumbSize*2)or(al.ThumbSize+2),
-0,
-ak.Window.NewElements and(al.ThumbSize+4)or(al.ThumbSize+2)
-),
-},Enum.EasingStyle.Quint,Enum.EasingDirection.InOut):Play()
-end
-if ax then
-ax:Close(false)
-end
-end
-end)
-else
-aA=math.clamp(aA,al.Value.Min or 0,al.Value.Max or 100)
+                        if ak.Window.NewElements then
+                            ag(al.UIElements.SliderIcon.Frame.Thumb, 0.2, {
+                                ImageTransparency = 0,
+                                Size = UDim2.new(
+                                    0,
+                                    ak.Window.NewElements and (al.ThumbSize * 2) or (al.ThumbSize + 2),
+                                    0,
+                                    ak.Window.NewElements and (al.ThumbSize + 4) or (al.ThumbSize + 2)
+                                ),
+                            }, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut):Play()
+                        end
+                        if ax then
+                            ax:Close(false)
+                        end
+                    end
+                end)
+            else
+                aA = math.clamp(aA, minVal, maxVal)
 
-local b=math.clamp(
-(aA-(al.Value.Min or 0))/((al.Value.Max or 100)-(al.Value.Min or 0)),
-0,
-1
-)
-aA=CalculateValue(al.Value.Min+b*(al.Value.Max-al.Value.Min))
+                local b = math.clamp(
+                    (aA - minVal) / (maxVal - minVal),
+                    0,
+                    1
+                )
+                aA = CalculateValue(minVal + b * (maxVal - minVal))
 
-if aA~=aq then
-ag(al.UIElements.SliderIcon.Frame,0.05,{Size=UDim2.new(b,0,1,0)}):Play()
-al.UIElements.SliderContainer.TextBox.Text=FormatValue(aA)
-if ax then
-ax.TitleFrame.Text=FormatValue(aA)
-end
-al.Value.Default=FormatValue(aA)
-aq=aA
-ae.SafeCallback(al.Callback,FormatValue(aA))
-end
-end
-end
-end
-end
-
+                if aA ~= aq then
+                    ag(al.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(b, 0, 1, 0) }):Play()
+                    al.UIElements.SliderContainer.TextBox.Text = FormatValue(aA)
+                    if ax then
+                        ax.TitleFrame.Text = FormatValue(aA)
+                    end
+                    al.Value.Default = FormatValue(aA)
+                    aq = aA
+                    ae.SafeCallback(al.Callback, FormatValue(aA))
+                end
+            end
+        end
+    end
+               end
+               
 function al.SetMax(az,aA)
 al.Value.Max=aA
 
