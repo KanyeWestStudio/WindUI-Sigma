@@ -1007,4 +1007,35 @@ function Creator:GetElementPosition(elements, targetIndex, isHStack)
 	return nil, 4
 end
 
+local IconDatabase = require(script.Parent.IconDatabase)
+
+function Creator.CreateIcon(iconString, parent, size)
+    local resolved = IconDatabase.Resolve(iconString)
+    if not resolved then return nil end
+    
+    if resolved.Type == "font" then
+        local label = Instance.new("TextLabel")
+        label.Parent = parent
+        label.Size = size or UDim2.new(0, 24, 0, 24)
+        label.BackgroundTransparency = 1
+        label.FontFace = Font.new(resolved.Path)
+        label.Text = resolved.Icon
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextSize = 24
+        label.TextScaled = true
+        return label
+    else
+        local image = Instance.new("ImageLabel")
+        image.Parent = parent
+        image.Size = size or UDim2.new(0, 24, 0, 24)
+        image.BackgroundTransparency = 1
+        image.Image = resolved.AssetId
+        return image
+    end
+end
+
+function Creator.IsIconReference(str)
+    return str and str:match("^%w+:.+$") ~= nil
+end
+
 return Creator
