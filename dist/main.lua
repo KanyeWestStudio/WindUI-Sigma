@@ -7238,101 +7238,6 @@ end
 
 return af end function a.I()
 
-local aa={}
-
-
-aa.Libraries={
-
-BuilderIcons={
-Type="font",
-Path="rbxasset://LuaPackages/Packages/_Index/BuilderIcons/BuilderIcons/BuilderIcons.json",
-},
-
-Solar={
-Type="image",
-Icons={
-["sun-bold"]="rbxassetid://1234567890",
-["moon-bold"]="rbxassetid://1234567891",
-}
-},
-
-Lucide={
-Type="image",
-Icons={sun=
-"rbxassetid://...",moon=
-"rbxassetid://...",
-}
-},
-
-SF={
-Type="image",
-Icons={
-["sun.max.fill"]="rbxassetid://...",
-["moon.fill"]="rbxassetid://...",
-}
-},
-
-Geist={
-Type="image",
-Icons={sun=
-"rbxassetid://...",moon=
-"rbxassetid://...",
-}
-},
-
-Craft={
-Type="image",
-Icons={sun=
-"rbxassetid://...",moon=
-"rbxassetid://...",
-}
-},
-}
-
-
-function aa.Resolve(ac)
-if not ac then return nil end
-
-local ad,ae=ac:match"^(%w+):(.+)$"
-
-
-if not ad then
-return{
-Type="font",
-Path=aa.Libraries.BuilderIcons.Path,
-Icon=ac
-}
-end
-
-local af=aa.Libraries[ad]
-if not af then return nil end
-
-if af.Type=="font"then
-return{
-Type="font",
-Path=af.Path,
-Icon=ae
-}
-else
-local ag=af.Icons[ae]
-if ag then
-return{
-Type="image",
-AssetId=ag
-}
-end
-end
-
-return nil
-end
-
-
-function aa.IsIconReference(ac)
-return ac and(ac:match"^%w+:.+$"~=nil or true)
-end
-
-return aa end function a.J()
-
 local aa=(cloneref or clonereference or function(aa)
 return aa
 end)
@@ -7345,7 +7250,7 @@ local af=ae.New
 local ag=ae.Tween
 
 local ah={}
-local ai=a.load'I'
+local ai=require(script.Parent.Parent.modules.IconDatabase)
 local aj=false
 
 function ah.New(ak,al)
@@ -7872,7 +7777,7 @@ end
 end
 end)
 
-return ah end function a.K()
+return ah end function a.J()
 
 local aa=a.load'd'
 local ac=aa.New
@@ -8151,7 +8056,7 @@ Update(ap.Value.Default,true)
 return ap.__type,ap
 end
 
-return ae end function a.L()
+return ae end function a.K()
 
 local aa=(cloneref or clonereference or function(aa)
 return aa
@@ -8351,7 +8256,7 @@ end)
 return ak.__type,ak
 end
 
-return ag end function a.M()
+return ag end function a.L()
 
 local aa=a.load'd'local ac=
 aa.New local ad=
@@ -8461,7 +8366,7 @@ end
 return aj.__type,aj
 end
 
-return ae end function a.N()
+return ae end function a.M()
 
 local aa=a.load'd'
 local ae=aa.New
@@ -8489,7 +8394,7 @@ ai
 return"Divider",{__type="Divider",ElementFrame=aj}
 end
 
-return af end function a.O()
+return af end function a.N()
 local aa={}
 
 local ae=(cloneref or clonereference or function(ae)
@@ -9036,7 +8941,7 @@ end)
 end
 
 
-else a.load'N'
+else a.load'M'
 :New{Parent=aq.UIElements.Menu.Frame.ScrollingFrame}
 end
 end
@@ -9171,7 +9076,7 @@ UpdatePosition
 return au
 end
 
-return aa end function a.P()
+return aa end function a.O()
 
 local aa=(cloneref or clonereference or function(aa)
 return aa
@@ -9187,7 +9092,7 @@ af.Tween
 
 local ai=a.load'w'.New local aj=a.load'n'
 .New
-local ak=a.load'O'.New local al=
+local ak=a.load'N'.New local al=
 
 workspace.CurrentCamera
 
@@ -9304,7 +9209,7 @@ end
 return aq.__type,aq
 end
 
-return am end function a.Q()
+return am end function a.P()
 
 
 
@@ -9553,7 +9458,7 @@ end
 return table.concat(av)
 end
 
-return aa end function a.R()
+return aa end function a.Q()
 
 local aa={}
 
@@ -9561,7 +9466,7 @@ local af=a.load'd'
 local ag=af.New
 local ai=af.Tween
 
-local ak=a.load'Q'
+local ak=a.load'P'
 
 function aa.New(al,am,an,ap,aq)
 local ar={
@@ -9792,13 +9697,13 @@ end
 return ar
 end
 
-return aa end function a.S()
+return aa end function a.R()
 
 local aa=a.load'd'local af=
 aa.New
 
 
-local ag=a.load'R'
+local ag=a.load'Q'
 
 local ai={}
 
@@ -9894,7 +9799,7 @@ am.ElementFrame=ap.CodeFrame
 return am.__type,am
 end
 
-return ai end function a.T()
+return ai end function a.S()
 
 local aa=a.load'd'
 local af=aa.New local ag=
@@ -10769,7 +10674,7 @@ end)
 return ay.__type,ay
 end
 
-return au end function a.U()
+return au end function a.T()
 
 local aa=a.load'd'
 local af=aa.New
@@ -11148,7 +11053,7 @@ end)
 return an.__type,an
 end
 
-return ak end function a.V()
+return ak end function a.U()
 
 local aa=a.load'd'
 local af=aa.New
@@ -11165,7 +11070,7 @@ BackgroundTransparency=1,
 return"Space",{__type="Space",ElementFrame=am}
 end
 
-return ai end function a.W()
+return ai end function a.V()
 local aa=a.load'd'
 local af=aa.New
 
@@ -11234,7 +11139,7 @@ end
 return am.__type,am
 end
 
-return ai end function a.X()
+return ai end function a.W()
 local aa=a.load'd'
 local af=aa.New
 
@@ -11319,7 +11224,7 @@ al.Tab
 return am.__type,am
 end
 
-return ai end function a.Y()
+return ai end function a.X()
 local aa=a.load'd'
 local af=aa.New
 
@@ -11419,7 +11324,7 @@ end
 return am.__type,am
 end
 
-return ai end function a.Z()
+return ai end function a.Y()
 
 local aa=a.load'd'
 local af=aa.New
@@ -11506,7 +11411,7 @@ al.Tab
 return am.__type,am
 end
 
-return ai end function a._()
+return ai end function a.Z()
 local aa=(cloneref or clonereference or function(aa)
 return aa
 end)
@@ -11742,7 +11647,7 @@ ap.Main=av
 return ap.__type,ap
 end
 
-return al end function a.aa()
+return al end function a._()
 
 local aa=a.load'd'local af=
 aa.New
@@ -11775,29 +11680,29 @@ am.LabelFrame=an
 return am.__type,am
 end
 
-return ai end function a.ab()
+return ai end function a.aa()
 
 return{
 Elements={
 Paragraph=a.load'D',
 Button=a.load'E',
 Toggle=a.load'H',
-Slider=a.load'J',
-ProgressBar=a.load'K',
-Keybind=a.load'L',
-Input=a.load'M',
-Dropdown=a.load'P',
-Code=a.load'S',
-Colorpicker=a.load'T',
-Section=a.load'U',
-Divider=a.load'N',
-Space=a.load'V',
-Image=a.load'W',
-Group=a.load'X',
-HStack=a.load'Y',
-VStack=a.load'Z',
-Viewport=a.load'_',
-Label=a.load'aa',
+Slider=a.load'I',
+ProgressBar=a.load'J',
+Keybind=a.load'K',
+Input=a.load'L',
+Dropdown=a.load'O',
+Code=a.load'R',
+Colorpicker=a.load'S',
+Section=a.load'T',
+Divider=a.load'M',
+Space=a.load'U',
+Image=a.load'V',
+Group=a.load'W',
+HStack=a.load'X',
+VStack=a.load'Y',
+Viewport=a.load'Z',
+Label=a.load'_',
 
 },
 Load=function(aa,af,ai,ak,al,am,an,ap,aq)
@@ -11926,7 +11831,7 @@ end
 end
 end
 end,
-}end function a.ac()
+}end function a.ab()
 
 local aa=(cloneref or clonereference or function(aa)
 return aa
@@ -12380,7 +12285,7 @@ end
 
 
 
-local b=a.load'ab'
+local b=a.load'aa'
 
 b.Load(
 at,
@@ -12574,7 +12479,7 @@ ap.OnChangeFunc(ar)
 end
 end
 
-return ap end function a.ad()
+return ap end function a.ac()
 
 local aa={}
 
@@ -12583,7 +12488,7 @@ local af=a.load'd'
 local ai=af.New
 local ak=af.Tween
 
-local al=a.load'ac'
+local al=a.load'ab'
 
 function aa.New(am,an,ap,aq,ar)
 local at={
@@ -12752,7 +12657,7 @@ return at
 end
 
 
-return aa end function a.ae()
+return aa end function a.ad()
 return{
 Tab="table-of-contents",
 Paragraph="type",
@@ -12764,7 +12669,7 @@ Input="text-cursor-input",
 Dropdown="chevrons-up-down",
 Code="terminal",
 Colorpicker="palette",
-}end function a.af()
+}end function a.ae()
 local aa=(cloneref or clonereference or function(aa)
 return aa
 end)
@@ -12788,7 +12693,7 @@ Radius=22,
 Width=400,
 MaxHeight=380,
 
-Icons=a.load'ae',
+Icons=a.load'ad',
 }
 
 local ar=ak("TextBox",{
@@ -13303,7 +13208,7 @@ end)
 return aq
 end
 
-return af end function a.ag()
+return af end function a.af()
 
 
 
@@ -14979,8 +14884,8 @@ if ay.OpenButton and typeof(ay.OpenButton)=="table"then
 ay:EditOpenButton(ay.OpenButton)
 end
 
-local G=a.load'ac'
-local H=a.load'ad'
+local G=a.load'ab'
+local H=a.load'ac'
 local J=G.Init(ay,ax.WindUI,ax.WindUI.TooltipGui)
 J:OnChange(function(L)
 ay.CurrentTab=L
@@ -15437,7 +15342,7 @@ end)
 
 
 if not ay.HideSearchBar then
-local S=a.load'af'
+local S=a.load'ae'
 local T=false
 
 
@@ -15534,9 +15439,19 @@ Theme=nil,
 Creator=a.load'd',
 LocalizationModule=a.load'e',
 NotificationModule=a.load'f',
+IconDatabase=require(script.Parent.modules.IconDatabase),
 Themes=nil,
 Transparent=false,
-
+TransparencyValue=0.15,
+UIScale=1,
+ConfigManager=nil,
+Version="0.0.0",
+Services=a.load'k',
+OnThemeChangeFunction=nil,
+cloneref=nil,
+UIScaleObj=nil,
+CreateWindow=nil,
+CurrentInput=nil,
 TransparencyValue=0.15,
 
 UIScale=1,
@@ -15833,7 +15748,7 @@ aa:SetTheme"Dark"
 aa:SetLanguage(au.Language)
 
 function aa.CreateWindow(aB,b)
-local d=a.load'ag'
+local d=a.load'af'
 
 if not am:IsStudio()and writefile then
 if not isfolder"WindUI"then
