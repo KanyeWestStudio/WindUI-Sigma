@@ -373,8 +373,8 @@ end
 							end
 						end
 					end)
-				else
-		end
+		         end
+			else
 				   Value = math.clamp(Value, minVal, maxVal)
 
 					local delta = math.clamp(
