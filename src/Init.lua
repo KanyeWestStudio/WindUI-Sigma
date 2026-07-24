@@ -3,8 +3,8 @@ local WindUI = {
     Theme = nil, 
     Creator = require("./modules/Creator"), 
     LocalizationModule = require("./modules/Localization"), 
-    NotificationModule = require("./components/Notification"), 
-    IconDatabase = require(script.Parent.modules.IconDatabase), 
+    NotificationModule = require("./components/Notification"),  --  comma added
+    IconDatabase = require(script.Parent.modules.IconDatabase),  --  removed 'local', added comma
     Themes = nil, 
     Transparent = false, 
     TransparencyValue = 0.15, 
@@ -18,7 +18,6 @@ local WindUI = {
     CreateWindow = nil, 
     CurrentInput = nil, 
 }
-
 	TransparencyValue = 0.15,
 
 	UIScale = 1,
