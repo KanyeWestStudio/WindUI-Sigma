@@ -382,17 +382,23 @@ function Element:New(Config)
 	end
 
 	Creator.AddSignal(Slider.UIElements.SliderContainer.TextBox.FocusLost, function(enterPressed)
-		local newValue = tonumber(Slider.UIElements.SliderContainer.TextBox.Text)
-		if newValue then
-			Slider:Set(newValue)
-		else
-			Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(LastValue)
-			if Tooltip then
-				Tooltip.TitleFrame.Text = FormatValue(LastValue)
-			end
-		end
-	end)
-
+    local input = Slider.UIElements.SliderContainer.TextBox.Text:gsub(",", ".")  -- normalize comma to dot
+    local newValue = tonumber(input)
+    if newValue then
+        -- Clamp to min/max and quantize according to Step
+        local minVal = Slider.Value.Min or 0
+        local maxVal = Slider.Value.Max or 100
+        newValue = math.clamp(newValue, minVal, maxVal)
+        Slider:Set(newValue)
+    else
+        -- Revert to last valid value
+        Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(LastValue)
+        if Tooltip then
+            Tooltip.TitleFrame.Text = FormatValue(LastValue)
+        end
+    end
+end)
+	
 	local CurInput = Config.WindUI.GenerateGUID()
 
 	Creator.AddSignal(Slider.UIElements.SliderContainer.InputBegan, function(input)
