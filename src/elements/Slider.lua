@@ -381,7 +381,6 @@ else
         LastValue = Value
         Creator.SafeCallback(Slider.Callback, FormatValue(Value))
     end
-end
 				   Value = math.clamp(Value, minVal, maxVal)
 
 					local delta = math.clamp(
