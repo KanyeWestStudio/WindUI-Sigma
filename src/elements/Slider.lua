@@ -1,6 +1,7 @@
 local cloneref = (cloneref or clonereference or function(instance)
 	return instance
 end)
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = cloneref(game:GetService("UserInputService"))
 local RunService = cloneref(game:GetService("RunService"))
@@ -10,11 +11,12 @@ local New = Creator.New
 local Tween = Creator.Tween
 
 local Element = {}
-local IconDatabase = Config.Window.Creator.IconDatabase
-Creator.IconDatabase = IconDatabase
 local IsSliderHolding = false
 
 function Element:New(Config)
+	-- ✅ Get IconDatabase from the Creator passed in via Config
+	local IconDatabase = Config.Window.Creator.IconDatabase
+
 	local Slider = {
 		__type = "Slider",
 		Title = Config.Title or nil,
@@ -75,72 +77,123 @@ function Element:New(Config)
 			return math.floor(rawValue / Slider.Step + 0.5) * Slider.Step
 		end
 	end
-    local IconFrom, IconTo
-local TotalSliderWidth = 32
 
--- Helper to create an icon instance (font or image)
-local function CreateIconInstance(iconString, parent, size, name)
-    local resolved = IconDatabase.Resolve(iconString)
-    if not resolved then return nil end
+	-- Helper to create an icon instance (font or image)
+	local function CreateIconInstance(iconString, parent, size, name)
+		local resolved = IconDatabase.Resolve(iconString)
+		if not resolved then return nil end
 
-    local instance
-    if resolved.Type == "font" then
-        instance = New("TextLabel", {
-            Name = name,
-            Parent = parent,
-            Size = size,
-            BackgroundTransparency = 1,
-            FontFace = Font.new(resolved.Path),
-            Text = resolved.Icon,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = size.Y.Offset,  -- assume size is UDim2 with offset
-            TextScaled = true,
-            TextTransparency = 0,
-            ImageTransparency = 1,  -- hide any image overlay
-        })
-    else -- image
-        instance = Creator.Image(
-            resolved.AssetId,
-            resolved.AssetId,
-            0,
-            parent,
-            name,
-            true,
-            true,
-            name
-        )
-        instance.Size = size
-        instance.ImageTransparency = 0
-        instance.TextTransparency = 1  -- hide text overlay
-    end
-    return instance
-end
-
-if Slider.Icons then
-    if Slider.Icons.From then
-        IconFrom = CreateIconInstance(
-            Slider.Icons.From,
-            Config.Window.Folder,
-            UDim2.new(0, Slider.IconSize, 0, Slider.IconSize),
-            "SliderIconFrom"
-        )
-        if IconFrom then
-            TotalSliderWidth = TotalSliderWidth + Slider.IconSize - 2
-        end
-    end
-    if Slider.Icons.To then
-        IconTo = CreateIconInstance(
-            Slider.Icons.To,
-            Config.Window.Folder,
-            UDim2.new(0, Slider.IconSize, 0, Slider.IconSize),
-            "SliderIconTo"
-        )
-        if IconTo then
-            TotalSliderWidth = TotalSliderWidth + Slider.IconSize - 2
-        end
-    end
-end
+		local instance
+		if resolved.Type == "font" then
+			instance = New("TextLabel", {
+				Name = name,
+				Parent = parent,
+				Size = size,
+				BackgroundTransparency = 1,
+				FontFace = Font.new(resolved.Path),
+				Text = resolved.Icon,
+				TextColor3 = Color3.fromRGB(255, 255, 255),
+				TextSize = size.Y.Offset,
+				TextScaled = true,
+				TextTransparency = 0,
+				ImageTransparency = 1,
+			})
+		else -- image
+			instance = Creator.Image(
+				resolved.AssetId,
+				resolved.AssetId,
+				0,
+				parent,
+				name,
+				true,
+				true,
+				name
+			)
+			instance.Size = size
+			instance.ImageTransparency = 0
+			instance.TextTransparency = 1
+		end
+		return instance
 	end
+
+	-- Animate icon transition
+	local function AnimateIcon(iconInstance, newIconString, speed)
+		if not iconInstance then return end
+
+		local resolved = IconDatabase.Resolve(newIconString)
+		if not resolved then return end
+
+		-- Fade out
+		local fadeOut = TweenService:Create(iconInstance, TweenInfo.new(speed or 0.15), {
+			ImageTransparency = 1,
+			TextTransparency = 1,
+		})
+		fadeOut:Play()
+		fadeOut.Completed:Wait()
+
+		-- Update icon
+		if resolved.Type == "font" then
+			iconInstance.FontFace = Font.new(resolved.Path)
+			iconInstance.Text = resolved.Icon
+			iconInstance.TextTransparency = 0
+			iconInstance.ImageTransparency = 1
+		else
+			iconInstance.Image = resolved.AssetId
+			iconInstance.ImageTransparency = 0
+			iconInstance.TextTransparency = 1
+		end
+
+		-- Fade in
+		local fadeIn = TweenService:Create(iconInstance, TweenInfo.new(speed or 0.15), {
+			ImageTransparency = 0,
+			TextTransparency = 0,
+		})
+		fadeIn:Play()
+	end
+
+	-- Get icon based on slider value
+	local function GetIconForValue(value, min, max, fromIcon, toIcon)
+		local percent = (value - min) / (max - min)
+		if not fromIcon or not toIcon or fromIcon == toIcon then
+			return nil
+		end
+		if percent < 0.5 then
+			return fromIcon
+		else
+			return toIcon
+		end
+	end
+
+	-- Build the icons
+	local IconFrom, IconTo
+	local TotalSliderWidth = 32
+
+	if Slider.Icons then
+		if Slider.Icons.From then
+			IconFrom = CreateIconInstance(
+				Slider.Icons.From,
+				Config.Window.Folder,
+				UDim2.new(0, Slider.IconSize, 0, Slider.IconSize),
+				"SliderIconFrom"
+			)
+			if IconFrom then
+				TotalSliderWidth = TotalSliderWidth + Slider.IconSize - 2
+			end
+		end
+		if Slider.Icons.To then
+			IconTo = CreateIconInstance(
+				Slider.Icons.To,
+				Config.Window.Folder,
+				UDim2.new(0, Slider.IconSize, 0, Slider.IconSize),
+				"SliderIconTo"
+			)
+			if IconTo then
+				TotalSliderWidth = TotalSliderWidth + Slider.IconSize - 2
+			end
+		end
+	end
+
+	-- Build the slider frame
 	Slider.SliderFrame = require("../components/window/Element")({
 		Title = Slider.Title,
 		Desc = Slider.Desc,
@@ -283,120 +336,100 @@ end
 				)
 			then
 				if input then
-    isTouch = (input.UserInputType == Enum.UserInputType.Touch)
-    ScrollingFrameParent.ScrollingEnabled = false
-    IsSliderHolding = true
+					isTouch = (input.UserInputType == Enum.UserInputType.Touch)
+					ScrollingFrameParent.ScrollingEnabled = false
+					IsSliderHolding = true
 
-    local inputPosition = isTouch and input.Position.X or UserInputService:GetMouseLocation().X
-    local delta = math.clamp(
-        (inputPosition - Slider.UIElements.SliderIcon.AbsolutePosition.X)
-            / Slider.UIElements.SliderIcon.AbsoluteSize.X,
-        0,
-        1
-    )
-
-    Value = CalculateValue(minVal + delta * (maxVal - minVal))
-    Value = math.clamp(Value, minVal, maxVal)
-
-    if Value ~= LastValue then
-        Tween(Slider.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(delta, 0, 1, 0) }):Play()
-        Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(Value)
-        if Tooltip then Tooltip.TitleFrame.Text = FormatValue(Value) end
-        Slider.Value.Default = FormatValue(Value)
-        LastValue = Value
-        Creator.SafeCallback(Slider.Callback, FormatValue(Value))
-
-        -- Animate icon if both From and To icons exist
-        if IconFrom and IconTo then
-            local newIcon = GetIconForValue(Value, minVal, maxVal, Slider.Icons.From, Slider.Icons.To)
-            if newIcon then
-                if Value < (minVal + maxVal) / 2 then
-                    AnimateIcon(IconFrom, newIcon, 0.15)
-                else
-                    AnimateIcon(IconTo, newIcon, 0.15)
-                end
-            end
-        end
-    end
-
-    moveconnection = RunService.RenderStepped:Connect(function()
-        local inputPosition = isTouch and input.Position.X or UserInputService:GetMouseLocation().X
-        local delta = math.clamp(
-            (inputPosition - Slider.UIElements.SliderIcon.AbsolutePosition.X)
-                / Slider.UIElements.SliderIcon.AbsoluteSize.X,
-            0,
-            1
-        )
-        Value = CalculateValue(minVal + delta * (maxVal - minVal))
-
-        if Value ~= LastValue then
-            Tween(Slider.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(delta, 0, 1, 0) }):Play()
-            Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(Value)
-            if Tooltip then Tooltip.TitleFrame.Text = FormatValue(Value) end
-            Slider.Value.Default = FormatValue(Value)
-            LastValue = Value
-            Creator.SafeCallback(Slider.Callback, FormatValue(Value))
-        end
-    end)
-
-    releaseconnection = UserInputService.InputEnded:Connect(function(endInput)
-        if (
-            endInput.UserInputType == Enum.UserInputType.MouseButton1
-            or endInput.UserInputType == Enum.UserInputType.Touch
-        ) and input == endInput then
-            moveconnection:Disconnect()
-            releaseconnection:Disconnect()
-            IsSliderHolding = false
-            ScrollingFrameParent.ScrollingEnabled = true
-            Config.WindUI.CurrentInput = nil
-
-            if Config.Window.NewElements then
-                Tween(Slider.UIElements.SliderIcon.Frame.Thumb, 0.2, {
-                    ImageTransparency = 0,
-                    Size = UDim2.new(
-                        0,
-                        Config.Window.NewElements and (Slider.ThumbSize * 2) or (Slider.ThumbSize + 2),
-                        0,
-                        Config.Window.NewElements and (Slider.ThumbSize + 4) or (Slider.ThumbSize + 2)
-                    ),
-                }, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut):Play()
-            end
-
-            if Tooltip then
-                Tooltip:Close(false)
-            end
-        end
-    end)
-
-else
-    -- Non‑input case (programmatic set)
-    Value = math.clamp(Value, minVal, maxVal)
-    local delta = math.clamp((Value - minVal) / (maxVal - minVal), 0, 1)
-    Value = CalculateValue(minVal + delta * (maxVal - minVal))
-
-    if Value ~= LastValue then
-        Slider.UIElements.SliderIcon.Frame.Size = UDim2.new(delta, 0, 1, 0)
-        Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(Value)
-        if Tooltip then Tooltip.TitleFrame.Text = FormatValue(Value) end
-        Slider.Value.Default = FormatValue(Value)
-        LastValue = Value
-        Creator.SafeCallback(Slider.Callback, FormatValue(Value))
-    end
-				   Value = math.clamp(Value, minVal, maxVal)
-
+					local inputPosition = isTouch and input.Position.X or UserInputService:GetMouseLocation().X
 					local delta = math.clamp(
-						(Value - minVal) / (maxVal - minVal),
+						(inputPosition - Slider.UIElements.SliderIcon.AbsolutePosition.X)
+							/ Slider.UIElements.SliderIcon.AbsoluteSize.X,
 						0,
 						1
 					)
+
+					Value = CalculateValue(minVal + delta * (maxVal - minVal))
+					Value = math.clamp(Value, minVal, maxVal)
+
+					if Value ~= LastValue then
+						Tween(Slider.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(delta, 0, 1, 0) }):Play()
+						Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(Value)
+						if Tooltip then Tooltip.TitleFrame.Text = FormatValue(Value) end
+						Slider.Value.Default = FormatValue(Value)
+						LastValue = Value
+						Creator.SafeCallback(Slider.Callback, FormatValue(Value))
+
+						-- Animate icon if both From and To icons exist
+						if IconFrom and IconTo then
+							local newIcon = GetIconForValue(Value, minVal, maxVal, Slider.Icons.From, Slider.Icons.To)
+							if newIcon then
+								if Value < (minVal + maxVal) / 2 then
+									AnimateIcon(IconFrom, newIcon, 0.15)
+								else
+									AnimateIcon(IconTo, newIcon, 0.15)
+								end
+							end
+						end
+					end
+
+					moveconnection = RunService.RenderStepped:Connect(function()
+						local inputPosition = isTouch and input.Position.X or UserInputService:GetMouseLocation().X
+						local delta = math.clamp(
+							(inputPosition - Slider.UIElements.SliderIcon.AbsolutePosition.X)
+								/ Slider.UIElements.SliderIcon.AbsoluteSize.X,
+							0,
+							1
+						)
+						Value = CalculateValue(minVal + delta * (maxVal - minVal))
+
+						if Value ~= LastValue then
+							Tween(Slider.UIElements.SliderIcon.Frame, 0.05, { Size = UDim2.new(delta, 0, 1, 0) }):Play()
+							Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(Value)
+							if Tooltip then Tooltip.TitleFrame.Text = FormatValue(Value) end
+							Slider.Value.Default = FormatValue(Value)
+							LastValue = Value
+							Creator.SafeCallback(Slider.Callback, FormatValue(Value))
+						end
+					end)
+
+					releaseconnection = UserInputService.InputEnded:Connect(function(endInput)
+						if (
+							endInput.UserInputType == Enum.UserInputType.MouseButton1
+							or endInput.UserInputType == Enum.UserInputType.Touch
+						) and input == endInput then
+							moveconnection:Disconnect()
+							releaseconnection:Disconnect()
+							IsSliderHolding = false
+							ScrollingFrameParent.ScrollingEnabled = true
+							Config.WindUI.CurrentInput = nil
+
+							if Config.Window.NewElements then
+								Tween(Slider.UIElements.SliderIcon.Frame.Thumb, 0.2, {
+									ImageTransparency = 0,
+									Size = UDim2.new(
+										0,
+										Config.Window.NewElements and (Slider.ThumbSize * 2) or (Slider.ThumbSize + 2),
+										0,
+										Config.Window.NewElements and (Slider.ThumbSize + 4) or (Slider.ThumbSize + 2)
+									),
+								}, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut):Play()
+							end
+
+							if Tooltip then
+								Tooltip:Close(false)
+							end
+						end
+					end)
+				else
+					-- Non‑input case (programmatic set)
+					Value = math.clamp(Value, minVal, maxVal)
+					local delta = math.clamp((Value - minVal) / (maxVal - minVal), 0, 1)
 					Value = CalculateValue(minVal + delta * (maxVal - minVal))
 
 					if Value ~= LastValue then
 						Slider.UIElements.SliderIcon.Frame.Size = UDim2.new(delta, 0, 1, 0)
 						Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(Value)
-						if Tooltip then
-							Tooltip.TitleFrame.Text = FormatValue(Value)
-						end
+						if Tooltip then Tooltip.TitleFrame.Text = FormatValue(Value) end
 						Slider.Value.Default = FormatValue(Value)
 						LastValue = Value
 						Creator.SafeCallback(Slider.Callback, FormatValue(Value))
@@ -435,75 +468,23 @@ else
 		end
 	end
 
+	-- TextBox FocusLost
 	Creator.AddSignal(Slider.UIElements.SliderContainer.TextBox.FocusLost, function(enterPressed)
-    local input = Slider.UIElements.SliderContainer.TextBox.Text:gsub(",", ".")  -- normalize comma to dot
-    local newValue = tonumber(input)
-    if newValue then
-        -- Clamp to min/max and quantize according to Step
-        local minVal = Slider.Value.Min or 0
-        local maxVal = Slider.Value.Max or 100
-        newValue = math.clamp(newValue, minVal, maxVal)
-        Slider:Set(newValue)
-    else
-        -- Revert to last valid value
-        Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(LastValue)
-        if Tooltip then
-            Tooltip.TitleFrame.Text = FormatValue(LastValue)
-        end
-    end
-end)
+		local input = Slider.UIElements.SliderContainer.TextBox.Text:gsub(",", ".")
+		local newValue = tonumber(input)
+		if newValue then
+			local minVal = Slider.Value.Min or 0
+			local maxVal = Slider.Value.Max or 100
+			newValue = math.clamp(newValue, minVal, maxVal)
+			Slider:Set(newValue)
+		else
+			Slider.UIElements.SliderContainer.TextBox.Text = FormatValue(LastValue)
+			if Tooltip then
+				Tooltip.TitleFrame.Text = FormatValue(LastValue)
+			end
+		end
+	end)
 
-	
-local function AnimateIcon(iconInstance, newIconString, speed)
-    if not iconInstance then return end
-    
-    local resolved = IconDatabase.Resolve(newIconString)
-    if not resolved then return end
-    
-    -- Fade out
-    local fadeOut = TweenService:Create(iconInstance, TweenInfo.new(speed or 0.15), {
-        ImageTransparency = 1,
-        TextTransparency = 1,
-    })
-    fadeOut:Play()
-    fadeOut.Completed:Wait()
-    
-    -- Update icon
-    if resolved.Type == "font" then
-        iconInstance.FontFace = Font.new(resolved.Path)
-        iconInstance.Text = resolved.Icon
-        iconInstance.TextTransparency = 0
-        iconInstance.ImageTransparency = 1
-    else
-        iconInstance.Image = resolved.AssetId
-        iconInstance.ImageTransparency = 0
-        iconInstance.TextTransparency = 1
-    end
-    
-    -- Fade in
-    local fadeIn = TweenService:Create(iconInstance, TweenInfo.new(speed or 0.15), {
-        ImageTransparency = 0,
-        TextTransparency = 0,
-    })
-    fadeIn:Play()
-end
-
--- Get icon based on slider value
-local function GetIconForValue(value, min, max, fromIcon, toIcon)
-    local percent = (value - min) / (max - min)
-    
-    -- If from and to are the same or no icons, return nil
-    if not fromIcon or not toIcon or fromIcon == toIcon then
-        return nil
-    end
-    
-    -- Simple threshold: switch at 50%
-    if percent < 0.5 then
-        return fromIcon
-    else
-        return toIcon
-    end
-	end
 	local CurInput = Config.WindUI.GenerateGUID()
 
 	Creator.AddSignal(Slider.UIElements.SliderContainer.InputBegan, function(input)
@@ -537,5 +518,8 @@ local function GetIconForValue(value, min, max, fromIcon, toIcon)
 			end
 		end
 	end)
+
+	return Slider.__type, Slider
+end
 
 return Element
