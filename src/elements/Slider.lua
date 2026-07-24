@@ -11,6 +11,7 @@ local Tween = Creator.Tween
 
 local Element = {}
 local IconDatabase = require(script.Parent.Parent.modules.IconDatabase)
+Creator.IconDatabase = IconDatabase
 local IsSliderHolding = false
 
 function Element:New(Config)
