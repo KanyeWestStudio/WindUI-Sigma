@@ -423,4 +423,5 @@ return function(WindUI, Creator)
     SliderThumb = Color3.fromHex("#FFFFFF"),
     SliderThumbTransparency = 0.1,
 	}
+}
 end
