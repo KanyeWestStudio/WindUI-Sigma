@@ -371,9 +371,8 @@ end
 							if Tooltip then
 								Tooltip:Close(false)
 							end
-						end
 					end)
-		         end
+	         	end
 			else
 				   Value = math.clamp(Value, minVal, maxVal)
 
