@@ -7,7 +7,8 @@ local UserInputService = cloneref(game:GetService("UserInputService"))
 local TweenService = cloneref(game:GetService("TweenService"))
 local LocalizationService = cloneref(game:GetService("LocalizationService"))
 local HttpService = cloneref(game:GetService("HttpService"))
-
+local IconDatabase = require(script.Parent.IconDatabase)
+Creator.IconDatabase = IconDatabase
 local DynamicShapeModule = require("./DynamicShape")
 
 local RenderStepped = RunService.Heartbeat
