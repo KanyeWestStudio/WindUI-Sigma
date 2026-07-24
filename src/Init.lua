@@ -1,12 +1,23 @@
-local WindUI = {
-	Window = nil,
-	Theme = nil,
-	Creator = require("./modules/Creator"),
-	LocalizationModule = require("./modules/Localization"),
-	NotificationModule = require("./components/Notification"),
-    local IconDatabase = require(script.Parent.modules.IconDatabase)
-	Themes = nil,
-	Transparent = false,
+local WindUI = { 
+    Window = nil, 
+    Theme = nil, 
+    Creator = require("./modules/Creator"), 
+    LocalizationModule = require("./modules/Localization"), 
+    NotificationModule = require("./components/Notification"), 
+    IconDatabase = require(script.Parent.modules.IconDatabase), 
+    Themes = nil, 
+    Transparent = false, 
+    TransparencyValue = 0.15, 
+    UIScale = 1, 
+    ConfigManager = nil, 
+    Version = "0.0.0", 
+    Services = require("./utils/services/Init"), 
+    OnThemeChangeFunction = nil, 
+    cloneref = nil, 
+    UIScaleObj = nil, 
+    CreateWindow = nil, 
+    CurrentInput = nil, 
+}
 
 	TransparencyValue = 0.15,
 
