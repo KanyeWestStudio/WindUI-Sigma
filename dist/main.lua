@@ -7252,6 +7252,7 @@ local ag=ae.Tween
 
 local ah={}
 local ai=require(script.Parent.Parent.modules.IconDatabase)
+ae.IconDatabase=ai
 local aj=false
 
 function ah.New(ak,al)
