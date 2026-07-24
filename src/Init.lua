@@ -4,6 +4,7 @@ local WindUI = {
 	Creator = require("./modules/Creator"),
 	LocalizationModule = require("./modules/Localization"),
 	NotificationModule = require("./components/Notification"),
+    local IconDatabase = require(script.Parent.modules.IconDatabase)
 	Themes = nil,
 	Transparent = false,
 
