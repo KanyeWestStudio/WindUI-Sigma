@@ -10,7 +10,7 @@ local New = Creator.New
 local Tween = Creator.Tween
 
 local Element = {}
-local IconDatabase = require(script.Parent.Parent.modules.IconDatabase)
+local IconDatabase = Config.Window.Creator.IconDatabase
 Creator.IconDatabase = IconDatabase
 local IsSliderHolding = false
 
