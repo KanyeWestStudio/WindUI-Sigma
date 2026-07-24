@@ -1,7 +1,7 @@
 local cloneref = (cloneref or clonereference or function(instance)
 	return instance
 end)
-
+local TweenService = game:GetService("TweenService")
 local UserInputService = cloneref(game:GetService("UserInputService"))
 local RunService = cloneref(game:GetService("RunService"))
 
@@ -10,7 +10,7 @@ local New = Creator.New
 local Tween = Creator.Tween
 
 local Element = {}
-
+local IconDatabase = require("../modules/IconDatabase")
 local IsSliderHolding = false
 
 function Element:New(Config)
@@ -74,38 +74,71 @@ function Element:New(Config)
 			return math.floor(rawValue / Slider.Step + 0.5) * Slider.Step
 		end
 	end
+    local IconFrom, IconTo
+local TotalSliderWidth = 32
 
-	local IconFrom, IconTo
-	local TotalSliderWidth = 32
-	if Slider.Icons then
-		if Slider.Icons.From then
-			IconFrom = Creator.Image(
-				Slider.Icons.From,
-				Slider.Icons.From,
-				0,
-				Config.Window.Folder,
-				"SliderIconFrom",
-				true,
-				true,
-				"SliderIconFrom"
-			)
-			IconFrom.Size = UDim2.new(0, Slider.IconSize, 0, Slider.IconSize)
-			TotalSliderWidth = TotalSliderWidth + Slider.IconSize - 2
-		end
-		if Slider.Icons.To then
-			IconTo = Creator.Image(
-				Slider.Icons.To,
-				Slider.Icons.To,
-				0,
-				Config.Window.Folder,
-				"SliderIconTo",
-				true,
-				true,
-				"SliderIconTo"
-			)
-			IconTo.Size = UDim2.new(0, Slider.IconSize, 0, Slider.IconSize)
-			TotalSliderWidth = TotalSliderWidth + Slider.IconSize - 2
-		end
+-- Helper to create an icon instance (font or image)
+local function CreateIconInstance(iconString, parent, size, name)
+    local resolved = IconDatabase.Resolve(iconString)
+    if not resolved then return nil end
+
+    local instance
+    if resolved.Type == "font" then
+        instance = New("TextLabel", {
+            Name = name,
+            Parent = parent,
+            Size = size,
+            BackgroundTransparency = 1,
+            FontFace = Font.new(resolved.Path),
+            Text = resolved.Icon,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextSize = size.Y.Offset,  -- assume size is UDim2 with offset
+            TextScaled = true,
+            TextTransparency = 0,
+            ImageTransparency = 1,  -- hide any image overlay
+        })
+    else -- image
+        instance = Creator.Image(
+            resolved.AssetId,
+            resolved.AssetId,
+            0,
+            parent,
+            name,
+            true,
+            true,
+            name
+        )
+        instance.Size = size
+        instance.ImageTransparency = 0
+        instance.TextTransparency = 1  -- hide text overlay
+    end
+    return instance
+end
+
+if Slider.Icons then
+    if Slider.Icons.From then
+        IconFrom = CreateIconInstance(
+            Slider.Icons.From,
+            Config.Window.Folder,
+            UDim2.new(0, Slider.IconSize, 0, Slider.IconSize),
+            "SliderIconFrom"
+        )
+        if IconFrom then
+            TotalSliderWidth = TotalSliderWidth + Slider.IconSize - 2
+        end
+    end
+    if Slider.Icons.To then
+        IconTo = CreateIconInstance(
+            Slider.Icons.To,
+            Config.Window.Folder,
+            UDim2.new(0, Slider.IconSize, 0, Slider.IconSize),
+            "SliderIconTo"
+        )
+        if IconTo then
+            TotalSliderWidth = TotalSliderWidth + Slider.IconSize - 2
+        end
+    end
+end
 	end
 	Slider.SliderFrame = require("../components/window/Element")({
 		Title = Slider.Title,
@@ -273,6 +306,19 @@ function Element:New(Config)
 						Slider.Value.Default = FormatValue(Value)
 						LastValue = Value
 						Creator.SafeCallback(Slider.Callback, FormatValue(Value))
+					-- Animate icon if both From and To icons exist
+                      if IconFrom and IconTo then
+                     local newIcon = GetIconForValue(Value, minVal, maxVal, Slider.Icons.From, Slider.Icons.To)
+                     if newIcon then
+     -- Determine which icon to animate based on current value
+                   if Value < (minVal + maxVal) / 2 then
+                AnimateIcon(IconFrom, newIcon, 0.15)
+            else
+                AnimateIcon(IconTo, newIcon, 0.15)
+            end
+        end
+    end
+						end
 					end
 
 					moveconnection = RunService.RenderStepped:Connect(function()
@@ -398,7 +444,58 @@ function Element:New(Config)
         end
     end
 end)
+
 	
+local function AnimateIcon(iconInstance, newIconString, speed)
+    if not iconInstance then return end
+    
+    local resolved = IconDatabase.Resolve(newIconString)
+    if not resolved then return end
+    
+    -- Fade out
+    local fadeOut = TweenService:Create(iconInstance, TweenInfo.new(speed or 0.15), {
+        ImageTransparency = 1,
+        TextTransparency = 1,
+    })
+    fadeOut:Play()
+    fadeOut.Completed:Wait()
+    
+    -- Update icon
+    if resolved.Type == "font" then
+        iconInstance.FontFace = Font.new(resolved.Path)
+        iconInstance.Text = resolved.Icon
+        iconInstance.TextTransparency = 0
+        iconInstance.ImageTransparency = 1
+    else
+        iconInstance.Image = resolved.AssetId
+        iconInstance.ImageTransparency = 0
+        iconInstance.TextTransparency = 1
+    end
+    
+    -- Fade in
+    local fadeIn = TweenService:Create(iconInstance, TweenInfo.new(speed or 0.15), {
+        ImageTransparency = 0,
+        TextTransparency = 0,
+    })
+    fadeIn:Play()
+end
+
+-- Get icon based on slider value
+local function GetIconForValue(value, min, max, fromIcon, toIcon)
+    local percent = (value - min) / (max - min)
+    
+    -- If from and to are the same or no icons, return nil
+    if not fromIcon or not toIcon or fromIcon == toIcon then
+        return nil
+    end
+    
+    -- Simple threshold: switch at 50%
+    if percent < 0.5 then
+        return fromIcon
+    else
+        return toIcon
+    end
+	end
 	local CurInput = Config.WindUI.GenerateGUID()
 
 	Creator.AddSignal(Slider.UIElements.SliderContainer.InputBegan, function(input)
