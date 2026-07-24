@@ -538,6 +538,5 @@ local function GetIconForValue(value, min, max, fromIcon, toIcon)
 	end)
 
 	return Slider.__type, Slider
-end
 
 return Element
