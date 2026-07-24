@@ -375,7 +375,7 @@ return function(WindUI, Creator)
 			}, { Rotation = 60 }),
 
 			Icon = Color3.fromHex("#ffffff"),
-		}
+		}, 
 		
 	LiquidGlass = {
     Name = "Liquid Glass",
