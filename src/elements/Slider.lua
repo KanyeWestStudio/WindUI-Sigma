@@ -374,7 +374,8 @@ end
 						end
 					end)
 				else
-					Value = math.clamp(Value, minVal, maxVal)
+		end
+				   Value = math.clamp(Value, minVal, maxVal)
 
 					local delta = math.clamp(
 						(Value - minVal) / (maxVal - minVal),
