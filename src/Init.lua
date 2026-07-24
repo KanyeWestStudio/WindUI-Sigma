@@ -17,7 +17,6 @@ local WindUI = {
     UIScaleObj = nil, 
     CreateWindow = nil, 
     CurrentInput = nil, 
-}
 	TransparencyValue = 0.15,
 
 	UIScale = 1,
